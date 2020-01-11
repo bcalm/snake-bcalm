@@ -101,6 +101,7 @@ class Game {
       this.ghostSnake.turnLeft();
       return;
     }
+    console.log("hello");
     this.snake.turnLeft();
   }
 }
@@ -159,10 +160,6 @@ const drawGame = function(game) {
   drawFood(food);
 };
 
-// const handleKeyPress = snake => {
-//   game.turnLeft();
-// };
-
 const moveAndDrawSnake = function(game) {
   game.move();
   const snake = game.getSnakeStatus();
@@ -174,7 +171,7 @@ const moveAndDrawSnake = function(game) {
 };
 
 const attachEventListeners = game => {
-  document.body.onkeydown = game.turnSnakeLeft;
+  document.body.onkeydown = () => game.turnSnake("snake");
 };
 
 const initSnake = () => {
