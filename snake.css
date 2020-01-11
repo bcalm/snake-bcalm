@@ -1,7 +1,6 @@
 h1 {
   text-align: center;
 }
-
 #grid {
   width: 800px;
   display: flex;
@@ -9,16 +8,16 @@ h1 {
   flex-wrap: wrap;
   border: 1px solid black;
 }
-
 .cell {
   width: 8px;
   height: 8px;
 }
-
 .snake {
   background-color: black;
 }
-
 .ghost {
   background-color: gray;
+}
+.food {
+  background-color: red;
 }
