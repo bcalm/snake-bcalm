@@ -38,16 +38,18 @@ class Snake {
     return this.type;
   }
 
+  get head() {
+    return this.positions[this.positions.length - 1];
+  }
+
   turnLeft() {
     this.direction.turnLeft();
   }
 
   move() {
-    const [headX, headY] = this.positions[this.positions.length - 1];
+    const [headX, headY] = this.location[this.location.length - 1];
     this.previousTail = this.positions.shift();
-
     const [deltaX, deltaY] = this.direction.delta;
-
     this.positions.push([headX + deltaX, headY + deltaY]);
   }
 }
@@ -62,11 +64,24 @@ class Food {
   }
 }
 
+const isFoodEaten = function(snakePosition, foodPosition) {
+  return snakePosition[0] === foodPosition[0] && snakePosition[1] === foodPosition[1];
+};
+
+const generateNewFood = function(width, height) {
+  const rowId = Math.floor(Math.random() * width);
+  const colId = Math.floor(Math.random() * height);
+  const newFood = new Food(rowId, colId);
+  return newFood;
+};
+
 class Game {
-  constructor(snake, ghostSnake, food) {
+  constructor(snake, ghostSnake, food, size) {
     this.snake = snake;
     this.ghostSnake = ghostSnake;
     this.food = food;
+    this.rowId = size[0];
+    this.colId = size[1];
   }
 
   getSnakeStatus() {
@@ -101,8 +116,13 @@ class Game {
       this.ghostSnake.turnLeft();
       return;
     }
-    console.log("hello");
     this.snake.turnLeft();
+  }
+
+  update() {
+    if (isFoodEaten(this.snake.head, this.food.position)) {
+      this.food = generateNewFood(this.rowId, this.colId);
+    }
   }
 }
 
@@ -143,6 +163,12 @@ const drawSnake = function(snake) {
     const cell = getCell(colId, rowId);
     cell.classList.add(snake.species);
   });
+};
+
+const eraseFood = function(food) {
+  let [colId, rowId] = food.location;
+  const cell = getCell(colId, rowId);
+  cell.classList.remove("food");
 };
 
 const drawFood = function(food) {
@@ -199,7 +225,6 @@ const setup = game => {
 
 const animateSnakes = game => {
   moveAndDrawSnake(game);
-  moveAndDrawSnake(game);
 };
 
 const randomlyTurnSnake = game => {
@@ -209,12 +234,20 @@ const randomlyTurnSnake = game => {
   }
 };
 
+const gameLoop = function(game) {
+  eraseFood(game.getFoodStatus());
+  animateSnakes(game);
+  randomlyTurnSnake(game);
+  game.update();
+  drawFood(game.getFoodStatus());
+};
+
 const main = function() {
   const snake = initSnake();
   const ghostSnake = initGhostSnake();
   const food = new Food(5, 5);
-  const game = new Game(snake, ghostSnake, food);
+  const size = [100, 60];
+  const game = new Game(snake, ghostSnake, food, size);
   setup(game);
-  setInterval(animateSnakes, 200, game);
-  setInterval(randomlyTurnSnake, 500, game);
+  setInterval(gameLoop, 200, game);
 };
