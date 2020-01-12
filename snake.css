@@ -21,3 +21,10 @@ h1 {
 .food {
   background-color: red;
 }
+
+#scoreCard {
+  position: absolute;
+  right: 10%;
+  top: 2%;
+  font-size: 2vw;
+}

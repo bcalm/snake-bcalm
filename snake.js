@@ -98,6 +98,7 @@ class Game {
     this.food = food;
     this.rowId = size[0];
     this.colId = size[1];
+    this.score = 0;
   }
 
   getSnakeStatus() {
@@ -106,6 +107,10 @@ class Game {
       species: this.snake.species,
       previousTail: this.snake.previousTail.slice()
     };
+  }
+
+  getScore() {
+    return this.score;
   }
 
   getGhostSnakeStatus() {
@@ -127,14 +132,13 @@ class Game {
     this.ghostSnake.move();
   }
 
-  turnSnake(snake) {
+  turnSnake(snake, directionLookup) {
     if (snake === "ghostSnake") {
       this.ghostSnake.turnLeft();
       return;
     }
 
     const snakeDirection = this.snake.direction.heading;
-    const directionLookup = { ArrowUp: 1, ArrowLeft: 2, ArrowRight: 0, ArrowDown: 3 };
 
     if (directionLookup[event.key] === (snakeDirection + 1) % 4) {
       this.snake.turnLeft();
@@ -149,6 +153,7 @@ class Game {
     if (isFoodEaten(this.snake.head, this.food.position)) {
       this.food = generateNewFood(this.rowId, this.colId);
       this.snake.grow();
+      this.score += 5;
     }
   }
 }
@@ -224,8 +229,15 @@ const moveAndDrawSnake = function(game) {
 };
 
 const attachEventListeners = game => {
+  const directionLookup = {
+    ArrowUp: 1,
+    ArrowLeft: 2,
+    ArrowRight: 0,
+    ArrowDown: 3
+  };
+
   document.body.onkeydown = () => {
-    game.turnSnake("snake");
+    game.turnSnake("snake", directionLookup);
   };
 };
 
@@ -263,11 +275,17 @@ const randomlyTurnSnake = game => {
   }
 };
 
+const displayScore = function(score) {
+  scoreCard.innerText = `SCORE: ${score}`;
+};
+
 const gameLoop = function(game) {
   eraseFood(game.getFoodStatus());
   animateSnakes(game);
   randomlyTurnSnake(game);
   game.update();
+  const score = game.getScore();
+  displayScore(score);
   drawFood(game.getFoodStatus());
 };
 
