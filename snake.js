@@ -20,6 +20,10 @@ class Direction {
   turnLeft() {
     this.heading = (this.heading + 1) % 4;
   }
+
+  turnRight() {
+    this.heading = (this.heading + 3) % 4;
+  }
 }
 
 const updateSnakeHead = function(location, direction, position) {
@@ -50,6 +54,10 @@ class Snake {
 
   turnLeft() {
     this.direction.turnLeft();
+  }
+
+  turnRight() {
+    this.direction.turnRight();
   }
 
   move() {
@@ -124,7 +132,17 @@ class Game {
       this.ghostSnake.turnLeft();
       return;
     }
-    this.snake.turnLeft();
+
+    const snakeDirection = this.snake.direction.heading;
+    const directionLookup = { ArrowUp: 1, ArrowLeft: 2, ArrowRight: 0, ArrowDown: 3 };
+
+    if (directionLookup[event.key] === (snakeDirection + 1) % 4) {
+      this.snake.turnLeft();
+    }
+
+    if (directionLookup[event.key] === (snakeDirection + 3) % 4) {
+      this.snake.turnRight();
+    }
   }
 
   update() {
@@ -206,7 +224,9 @@ const moveAndDrawSnake = function(game) {
 };
 
 const attachEventListeners = game => {
-  document.body.onkeydown = () => game.turnSnake("snake");
+  document.body.onkeydown = () => {
+    game.turnSnake("snake");
+  };
 };
 
 const initSnake = () => {
