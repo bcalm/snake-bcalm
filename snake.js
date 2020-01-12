@@ -158,11 +158,15 @@ class Game {
   }
 
   hasGameOver() {
+    const snakeBody = this.snake.location.slice(0, -1);
+    const isBodyTouch = snakeBody.filter(
+      part => part[0] === this.snake.head[0] && this.snake.head[1] === part[1]
+    ).length;
     const isTopTouch = this.snake.head[0] === 0;
     const isBottomTouch = this.snake.head[0] === this.rowId;
     const isLeftWallTouch = this.snake.head[1] === 0;
     const isRightWallTouch = this.snake.head[1] === this.colId;
-    return isTopTouch || isBottomTouch || isLeftWallTouch || isRightWallTouch;
+    return isBodyTouch || isTopTouch || isBottomTouch || isLeftWallTouch || isRightWallTouch;
   }
 }
 
@@ -288,7 +292,7 @@ const displayScore = function(score) {
 };
 
 const printGameOver = function(score) {
-  document.write(`gameOver\n SCORE: ${score}`);
+  // document.write(`gameOver\n SCORE: ${score}`);
 };
 
 const gameLoop = function(game) {
