@@ -22,6 +22,12 @@ class Direction {
   }
 }
 
+const updateSnakeHead = function(location, direction, position) {
+  const [headX, headY] = location[location.length - 1];
+  const [deltaX, deltaY] = direction;
+  position.push([headX + deltaX, headY + deltaY]);
+};
+
 class Snake {
   constructor(positions, direction, type) {
     this.positions = positions.slice();
@@ -47,10 +53,12 @@ class Snake {
   }
 
   move() {
-    const [headX, headY] = this.location[this.location.length - 1];
+    updateSnakeHead(this.location, this.direction.delta, this.positions);
     this.previousTail = this.positions.shift();
-    const [deltaX, deltaY] = this.direction.delta;
-    this.positions.push([headX + deltaX, headY + deltaY]);
+  }
+
+  grow() {
+    updateSnakeHead(this.location, this.direction.delta, this.positions);
   }
 }
 class Food {
@@ -122,6 +130,7 @@ class Game {
   update() {
     if (isFoodEaten(this.snake.head, this.food.position)) {
       this.food = generateNewFood(this.rowId, this.colId);
+      this.snake.grow();
     }
   }
 }
