@@ -28,3 +28,7 @@ h1 {
   top: 2%;
   font-size: 2vw;
 }
+
+#gameOver {
+  background-color: gray;
+}

@@ -156,6 +156,14 @@ class Game {
       this.score += 5;
     }
   }
+
+  hasGameOver() {
+    const isTopTouch = this.snake.head[0] === 0;
+    const isBottomTouch = this.snake.head[0] === this.rowId;
+    const isLeftWallTouch = this.snake.head[1] === 0;
+    const isRightWallTouch = this.snake.head[1] === this.colId;
+    return isTopTouch || isBottomTouch || isLeftWallTouch || isRightWallTouch;
+  }
 }
 
 const NUM_OF_COLS = 100;
@@ -279,7 +287,14 @@ const displayScore = function(score) {
   scoreCard.innerText = `SCORE: ${score}`;
 };
 
+const printGameOver = function(score) {
+  document.write(`gameOver\n SCORE: ${score}`);
+};
+
 const gameLoop = function(game) {
+  if (game.hasGameOver()) {
+    printGameOver(game.getScore());
+  }
   eraseFood(game.getFoodStatus());
   animateSnakes(game);
   randomlyTurnSnake(game);
