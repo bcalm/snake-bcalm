@@ -1,8 +1,3 @@
-const EAST = 0;
-const NORTH = 1;
-const WEST = 2;
-const SOUTH = 3;
-
 const NUM_OF_COLS = 100;
 const NUM_OF_ROWS = 60;
 
@@ -70,19 +65,10 @@ const moveAndDrawSnake = function(game) {
 };
 
 const attachEventListeners = game => {
-  const directionLookup = {
-    ArrowUp: 1,
-    ArrowLeft: 2,
-    ArrowRight: 0,
-    ArrowDown: 3
-  };
-
   document.body.onkeydown = () => {
-    game.turnSnake(directionLookup);
+    game.turnSnake(event.key);
   };
 };
-
-
 
 const animateSnakes = game => {
   moveAndDrawSnake(game);
@@ -100,7 +86,7 @@ const displayScore = function(score) {
 };
 
 const printGameOver = function(score) {
-  document.write("gameOver");
+  game.innerHTML = `<div style='text-align:center;'><p style='font-size:10vw'>Game Over</p><br><p style='font-size:3vw'>Score: ${score}`;
 };
 
 const setup = game => {
@@ -141,11 +127,12 @@ const main = function() {
       clearInterval(interval);
       printGameOver(state.score);
     }
+
     eraseFood(state.previousFood);
+    drawFood(state.food);
     animateSnakes(game);
     randomlyTurnSnake(game);
     game.update();
     displayScore(state.score);
-    drawFood(state.food);
   }, 200);
 };

@@ -9,32 +9,35 @@ const arePointEqual = function(firstPoint, secondPoint) {
 };
 
 class Snake {
+  #positions;
+  #direction;
+  #type;
+  #previousTail;
   constructor(positions, direction, type) {
-    this.positions = positions.slice();
-    this.direction = direction;
-    this.type = type;
-    this.previousTail = [0, 0];
+    this.#positions = positions.slice();
+    this.#direction = direction;
+    this.#type = type;
+    this.#previousTail = [0, 0];
   }
 
   get location() {
-    return this.positions.slice();
+    return this.#positions.slice();
   }
 
   get species() {
-    return this.type;
+    return this.#type;
   }
 
   get head() {
-    return this.positions[this.positions.length - 1];
+    return this.#positions[this.#positions.length - 1];
   }
-
-  turnLeft() {
-    this.direction.turnLeft();
+  turnSnake(pressedKey) {
+    this.#direction.changeDirection(pressedKey);
   }
 
   isFoodEaten(foodPosition) {
     if (arePointEqual(this.head, foodPosition)) {
-      updateSnakeHead(this.location, this.direction.delta, this.positions);
+      updateSnakeHead(this.location, this.#direction.delta, this.#positions);
       return true;
     }
     return false;
@@ -44,17 +47,13 @@ class Snake {
     return {
       location: this.location.slice(),
       species: this.species,
-      previousTail: this.previousTail.slice()
+      previousTail: this.#previousTail.slice()
     };
   }
 
-  turnRight() {
-    this.direction.turnRight();
-  }
-
   move() {
-    updateSnakeHead(this.location, this.direction.delta, this.positions);
-    this.previousTail = this.positions.shift();
+    updateSnakeHead(this.location, this.#direction.delta, this.#positions);
+    this.#previousTail = this.#positions.shift();
   }
 
   onLine(boundary) {
@@ -65,19 +64,21 @@ class Snake {
     return isTopTouch || isLeftWallTouch || isBottomTouch || isRightWallTouch;
   }
 
-  isEatenItself() {
+  hasEatenItself() {
     const snakeBody = this.location.slice(0, -1);
     return snakeBody.some(part => part[0] === this.head[0] && this.head[1] === part[1]);
   }
 }
 
 class Food {
+  #colId;
+  #rowId;
   constructor(colId, rowId) {
-    this.colId = colId;
-    this.rowId = rowId;
+    this.#colId = colId;
+    this.#rowId = rowId;
   }
 
   get position() {
-    return [this.colId, this.rowId];
+    return [this.#colId, this.#rowId];
   }
 }
