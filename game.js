@@ -56,8 +56,8 @@ class Game {
 
   hasGameOver() {
     const isSnakeEatenItself = this.snake.isEatenItself();
-    const boundary = [this.rowId, this.colId];
-    const isTouchBoundary = this.snake.isBoundary(boundary);
+    const line = [this.rowId, this.colId];
+    const isTouchBoundary = this.snake.onLine(line);
 
     return isSnakeEatenItself || isTouchBoundary;
   }

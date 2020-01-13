@@ -57,7 +57,7 @@ class Snake {
     this.previousTail = this.positions.shift();
   }
 
-  isBoundary(boundary) {
+  onLine(boundary) {
     const isTopTouch = this.head[1] < 0;
     const isBottomTouch = this.head[0] === boundary[0];
     const isLeftWallTouch = this.head[0] < 0;
