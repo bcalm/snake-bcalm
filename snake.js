@@ -84,6 +84,19 @@ class Snake {
     updateSnakeHead(this.location, this.direction.delta, this.positions);
     this.previousTail = this.positions.shift();
   }
+
+  isBoundary(boundary) {
+    const isTopTouch = this.head[1] < 0;
+    const isBottomTouch = this.head[0] === boundary[0];
+    const isLeftWallTouch = this.head[0] < 0;
+    const isRightWallTouch = this.head[1] === boundary[1];
+    return isTopTouch || isLeftWallTouch || isBottomTouch || isRightWallTouch;
+  }
+
+  isEatenItself() {
+    const snakeBody = this.location.slice(0, -1);
+    return snakeBody.some(part => part[0] === this.head[0] && this.head[1] === part[1]);
+  }
 }
 
 class Food {
@@ -129,12 +142,11 @@ class Game {
     this.ghostSnake.move();
   }
 
-  turnSnake(snake, directionLookup) {
-    if (snake === "ghostSnake") {
-      this.ghostSnake.turnLeft();
-      return;
-    }
+  turnGhostSnake() {
+    this.ghostSnake.turnLeft();
+  }
 
+  turnSnake(directionLookup) {
     const snakeDirection = this.snake.direction.heading;
 
     if (directionLookup[event.key] === (snakeDirection + 1) % 4) {
@@ -155,18 +167,13 @@ class Game {
   }
 
   hasGameOver() {
-    const snakeBody = this.snake.location.slice(0, -1);
-    const isBodyTouch = snakeBody.filter(
-      part => part[0] === this.snake.head[0] && this.snake.head[1] === part[1]
-    ).length;
-    const isTopTouch = this.snake.head[0] === 0;
-    const isBottomTouch = this.snake.head[0] === this.rowId;
-    const isLeftWallTouch = this.snake.head[1] === 0;
-    const isRightWallTouch = this.snake.head[1] === this.colId;
-    return isBodyTouch || isTopTouch || isBottomTouch || isLeftWallTouch || isRightWallTouch;
+    const isSnakeEatenItself = this.snake.isEatenItself();
+    const boundary = [this.rowId, this.colId];
+    const isTouchBoundary = this.snake.isBoundary(boundary);
+
+    return isSnakeEatenItself || isTouchBoundary;
   }
 }
-
 const NUM_OF_COLS = 100;
 const NUM_OF_ROWS = 60;
 
@@ -242,7 +249,7 @@ const attachEventListeners = game => {
   };
 
   document.body.onkeydown = () => {
-    game.turnSnake("snake", directionLookup);
+    game.turnSnake(directionLookup);
   };
 };
 
@@ -276,7 +283,7 @@ const animateSnakes = game => {
 const randomlyTurnSnake = game => {
   let x = Math.random() * 100;
   if (x > 50) {
-    game.turnSnake("ghostSnake");
+    game.turnGhostSnake();
   }
 };
 
@@ -285,22 +292,7 @@ const displayScore = function(score) {
 };
 
 const printGameOver = function(score) {
-  document.write(
-    `<h1 style="color: red; font-family: Arial, Helvetica, sans-serif; text-align:center; font-size: 100px;"> Game Over! <br> Score : ${score} </h1>`
-  );
-};
-
-const gameLoop = function(game) {
-  const state = game.state();
-  if (game.hasGameOver()) {
-    printGameOver(state.score);
-  }
-  eraseFood(state.previousFood);
-  animateSnakes(game);
-  randomlyTurnSnake(game);
-  game.update();
-  displayScore(state.score);
-  drawFood(state.food);
+  document.write("gameOver");
 };
 
 const main = function() {
@@ -310,5 +302,18 @@ const main = function() {
   const size = [100, 60];
   const game = new Game(snake, ghostSnake, food, size);
   setup(game);
-  setInterval(gameLoop, 200, game);
+
+  const interval = setInterval(() => {
+    const state = game.state();
+    if (game.hasGameOver()) {
+      clearInterval(interval);
+      printGameOver(state.score);
+    }
+    eraseFood(state.previousFood);
+    animateSnakes(game);
+    randomlyTurnSnake(game);
+    game.update();
+    displayScore(state.score);
+    drawFood(state.food);
+  }, 200);
 };
