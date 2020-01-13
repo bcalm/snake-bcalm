@@ -32,6 +32,10 @@ const updateSnakeHead = function(location, direction, position) {
   position.push([headX + deltaX, headY + deltaY]);
 };
 
+const arePointEqual = function(firstPoint, secondPoint) {
+  return firstPoint[0] === secondPoint[0] && firstPoint[1] === secondPoint[1];
+};
+
 class Snake {
   constructor(positions, direction, type) {
     this.positions = positions.slice();
@@ -56,6 +60,22 @@ class Snake {
     this.direction.turnLeft();
   }
 
+  isFoodEaten(foodPosition) {
+    if (arePointEqual(this.head, foodPosition)) {
+      updateSnakeHead(this.location, this.direction.delta, this.positions);
+      return true;
+    }
+    return false;
+  }
+
+  state() {
+    return {
+      location: this.location.slice(),
+      species: this.species,
+      previousTail: this.previousTail.slice()
+    };
+  }
+
   turnRight() {
     this.direction.turnRight();
   }
@@ -64,11 +84,8 @@ class Snake {
     updateSnakeHead(this.location, this.direction.delta, this.positions);
     this.previousTail = this.positions.shift();
   }
-
-  grow() {
-    updateSnakeHead(this.location, this.direction.delta, this.positions);
-  }
 }
+
 class Food {
   constructor(colId, rowId) {
     this.colId = colId;
@@ -80,15 +97,10 @@ class Food {
   }
 }
 
-const isFoodEaten = function(snakePosition, foodPosition) {
-  return snakePosition[0] === foodPosition[0] && snakePosition[1] === foodPosition[1];
-};
-
 const generateNewFood = function(width, height) {
   const rowId = Math.floor(Math.random() * width);
   const colId = Math.floor(Math.random() * height);
-  const newFood = new Food(rowId, colId);
-  return newFood;
+  return new Food(rowId, colId);
 };
 
 class Game {
@@ -99,31 +111,16 @@ class Game {
     this.rowId = size[0];
     this.colId = size[1];
     this.score = 0;
+    this.previousFood = [0, 0];
   }
 
-  getSnakeStatus() {
+  state() {
     return {
-      location: this.snake.location.slice(),
-      species: this.snake.species,
-      previousTail: this.snake.previousTail.slice()
-    };
-  }
-
-  getScore() {
-    return this.score;
-  }
-
-  getGhostSnakeStatus() {
-    return {
-      location: this.ghostSnake.location.slice(),
-      species: this.ghostSnake.species,
-      previousTail: this.ghostSnake.previousTail.slice()
-    };
-  }
-
-  getFoodStatus() {
-    return {
-      location: this.food.position
+      snake: this.snake.state(),
+      ghostSnake: this.ghostSnake.state(),
+      score: this.score,
+      food: this.food.position,
+      previousFood: this.previousFood
     };
   }
 
@@ -150,9 +147,9 @@ class Game {
   }
 
   update() {
-    if (isFoodEaten(this.snake.head, this.food.position)) {
+    if (this.snake.isFoodEaten(this.food.position)) {
+      this.previousFood = this.food.position;
       this.food = generateNewFood(this.rowId, this.colId);
-      this.snake.grow();
       this.score += 5;
     }
   }
@@ -210,34 +207,30 @@ const drawSnake = function(snake) {
 };
 
 const eraseFood = function(food) {
-  let [colId, rowId] = food.location;
+  let [colId, rowId] = food;
   const cell = getCell(colId, rowId);
   cell.classList.remove("food");
 };
 
 const drawFood = function(food) {
-  let [colId, rowId] = food.location;
+  let [colId, rowId] = food;
   const cell = getCell(colId, rowId);
   cell.classList.add("food");
 };
 
 const drawGame = function(game) {
-  const snake = game.getSnakeStatus();
-  const food = game.getFoodStatus();
-  const ghostSnake = game.getGhostSnakeStatus();
-  drawSnake(snake);
-  drawSnake(ghostSnake);
-  drawFood(food);
+  const state = game.state();
+  drawSnake(state.snake);
+  drawSnake(state.ghostSnake);
 };
 
 const moveAndDrawSnake = function(game) {
+  const state = game.state();
   game.move();
-  const snake = game.getSnakeStatus();
-  const ghostSnake = game.getGhostSnakeStatus();
-  eraseTail(snake);
-  drawSnake(snake);
-  eraseTail(ghostSnake);
-  drawSnake(ghostSnake);
+  eraseTail(state.snake);
+  drawSnake(state.snake);
+  eraseTail(state.ghostSnake);
+  drawSnake(state.ghostSnake);
 };
 
 const attachEventListeners = game => {
@@ -292,20 +285,22 @@ const displayScore = function(score) {
 };
 
 const printGameOver = function(score) {
-  // document.write(`gameOver\n SCORE: ${score}`);
+  document.write(
+    `<h1 style="color: red; font-family: Arial, Helvetica, sans-serif; text-align:center; font-size: 100px;"> Game Over! <br> Score : ${score} </h1>`
+  );
 };
 
 const gameLoop = function(game) {
+  const state = game.state();
   if (game.hasGameOver()) {
-    printGameOver(game.getScore());
+    printGameOver(state.score);
   }
-  eraseFood(game.getFoodStatus());
+  eraseFood(state.previousFood);
   animateSnakes(game);
   randomlyTurnSnake(game);
   game.update();
-  const score = game.getScore();
-  displayScore(score);
-  drawFood(game.getFoodStatus());
+  displayScore(state.score);
+  drawFood(state.food);
 };
 
 const main = function() {
