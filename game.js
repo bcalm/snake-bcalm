@@ -52,11 +52,18 @@ class Game {
     this.#snake.turnSnake(pressedKey);
   }
 
+  hasGhostEatenFood(food) {
+    if (this.#ghostSnake.hasFoodEaten(food.position, this.#food.growSize)) {
+      this.#food = generateNewFood(this.#rowId, this.#colId);
+    }
+  }
+
   update() {
     if (this.hasSnakeOnBoundary()) {
       this.#ghostSnake.changePosition();
     }
     const food = this.#food.getStatus();
+    this.hasGhostEatenFood(food);
     if (this.#snake.hasFoodEaten(food.position, this.#food.growSize)) {
       this.#food = generateNewFood(this.#rowId, this.#colId);
       this.#score += 5;

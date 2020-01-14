@@ -98,7 +98,7 @@ class Food {
   }
 
   get growSize() {
-    const sizeLookup = { normalFood: 1, specialFood: 0 };
+    const sizeLookup = { normalFood: 5, specialFood: 0 };
     const type = this.#type;
     return sizeLookup[type];
   }
