@@ -37,7 +37,7 @@ class Snake {
     }
   }
 
-  isFoodEaten(foodPosition, growSize) {
+  hasFoodEaten(foodPosition, growSize) {
     if (arePointEqual(this.head, foodPosition)) {
       this.grow(growSize);
       return true;
@@ -45,7 +45,7 @@ class Snake {
     return false;
   }
 
-  state() {
+  getStatus() {
     return {
       location: this.location.slice(),
       species: this.species,
@@ -54,15 +54,15 @@ class Snake {
   }
 
   move() {
-    const [headX, headY] = this.#positions[this.#positions.length - 1];
+    const [headX, headY] = this.head;
     this.#previousTail = this.#positions.shift();
     const [deltaX, deltaY] = this.#direction.delta;
     this.#positions.push([headX + deltaX, headY + deltaY]);
   }
 
   isOnLine(verticalLine, horizontalLine) {
-    const isLeftWallTouch = this.head[0] < verticalLine[0];
-    const isRightWallTouch = this.head[1] >= verticalLine[1];
+    const isLeftWallTouch = this.head[1] < verticalLine[0];
+    const isRightWallTouch = this.head[0] >= verticalLine[1];
     const isTopTouch = this.head[0] < horizontalLine[0];
     const isBottomTouch = this.head[1] >= horizontalLine[1];
     return isTopTouch || isLeftWallTouch || isBottomTouch || isRightWallTouch;
@@ -71,6 +71,15 @@ class Snake {
   hasEatenItself() {
     const snakeBody = this.location.slice(0, -1);
     return snakeBody.some(part => part[0] === this.head[0] && this.head[1] === part[1]);
+  }
+
+  changePosition() {
+    const position = [
+      [20, 21],
+      [21, 21],
+      [22, 21]
+    ];
+    this.#positions = position;
   }
 }
 
@@ -84,12 +93,12 @@ class Food {
     this.#type = type;
   }
 
-  get position() {
-    return [this.#colId, this.#rowId];
+  getStatus() {
+    return { position: [this.#colId, this.#rowId], type: this.#type };
   }
 
   get growSize() {
-    const sizeLookup = { normal: 5, special: 0 };
+    const sizeLookup = { normalFood: 1, specialFood: 0 };
     const type = this.#type;
     return sizeLookup[type];
   }

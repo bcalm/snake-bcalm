@@ -20,10 +20,15 @@ h1 {
   background-color: gray;
   border-radius: 30%;
 }
-.food {
+.normalFood {
   border-radius: 50%;
   animation: foodAnimation 2s forwards 0s infinite;
   background-color: red;
+}
+
+.specialFood {
+  animation: foodAnimation 2s forwards 0s infinite;
+  background-color: yellow;
 }
 
 #scoreCard {

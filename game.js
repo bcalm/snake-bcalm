@@ -1,5 +1,5 @@
 const generateNewFood = function(width, height) {
-  const foods = ["normal", "special"];
+  const foods = ["normalFood", "specialFood"];
   const foodType = foods[Math.floor(Math.random() * 2)];
   const rowId = Math.floor(Math.random() * width);
   const colId = Math.floor(Math.random() * height);
@@ -13,7 +13,6 @@ class Game {
   #rowId;
   #colId;
   #score;
-  #previousFood;
   constructor(snake, ghostSnake, food, size) {
     this.#snake = snake;
     this.#ghostSnake = ghostSnake;
@@ -21,16 +20,14 @@ class Game {
     this.#rowId = size[0];
     this.#colId = size[1];
     this.#score = 0;
-    this.#previousFood = [0, 0];
   }
 
-  state() {
+  getStatus() {
     return {
-      snake: this.#snake.state(),
-      ghostSnake: this.#ghostSnake.state(),
+      snake: this.#snake.getStatus(),
+      ghostSnake: this.#ghostSnake.getStatus(),
       score: this.#score,
-      food: this.#food.position,
-      previousFood: this.#previousFood
+      food: this.#food.getStatus()
     };
   }
 
@@ -40,17 +37,14 @@ class Game {
   }
 
   hasSnakeOnBoundary() {
-    const verticalLine = [4, this.#rowId - 4];
-    const horizontalLine = [4, this.#colId - 4];
+    const verticalLine = [0, this.#rowId];
+    const horizontalLine = [0, this.#colId];
     return this.#ghostSnake.isOnLine(verticalLine, horizontalLine);
   }
 
   turnGhostSnake() {
     const keys = ["ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight"];
     const direction = Math.floor(Math.random() * 4);
-    if (this.hasSnakeOnBoundary()) {
-      this.#ghostSnake.turnSnake(keys[direction]);
-    }
     this.#ghostSnake.turnSnake(keys[direction]);
   }
 
@@ -58,13 +52,12 @@ class Game {
     this.#snake.turnSnake(pressedKey);
   }
 
-  isFoodEaten() {
-    return this.#snake.isFoodEaten(this.#food.position, this.#food.growSize);
-  }
-
   update() {
-    if (this.isFoodEaten()) {
-      this.#previousFood = this.#food.position;
+    if (this.hasSnakeOnBoundary()) {
+      this.#ghostSnake.changePosition();
+    }
+    const food = this.#food.getStatus();
+    if (this.#snake.hasFoodEaten(food.position, this.#food.growSize)) {
       this.#food = generateNewFood(this.#rowId, this.#colId);
       this.#score += 5;
     }

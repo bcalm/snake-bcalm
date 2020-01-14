@@ -24,10 +24,11 @@ const createGrids = function() {
   }
 };
 
-const eraseTail = function(snake) {
-  let [colId, rowId] = snake.previousTail;
-  const cell = getCell(colId, rowId);
-  cell.classList.remove(snake.species);
+const eraseSnake = function(snake) {
+  snake.location.forEach(([colId, rowId]) => {
+    const cell = getCell(colId, rowId);
+    cell.classList.remove(snake.species);
+  });
 };
 
 const drawSnake = function(snake) {
@@ -38,40 +39,21 @@ const drawSnake = function(snake) {
 };
 
 const eraseFood = function(food) {
-  let [colId, rowId] = food;
+  let [colId, rowId] = food.position;
   const cell = getCell(colId, rowId);
-  cell.classList.remove("food");
+  cell.classList.remove(food.type);
 };
 
 const drawFood = function(food) {
-  let [colId, rowId] = food;
+  let [colId, rowId] = food.position;
   const cell = getCell(colId, rowId);
-  cell.classList.add("food");
-};
-
-const drawGame = function(game) {
-  const state = game.state();
-  drawSnake(state.snake);
-  drawSnake(state.ghostSnake);
-};
-
-const moveAndDrawSnake = function(game) {
-  const state = game.state();
-  game.move();
-  eraseTail(state.snake);
-  drawSnake(state.snake);
-  eraseTail(state.ghostSnake);
-  drawSnake(state.ghostSnake);
+  cell.classList.add(food.type);
 };
 
 const attachEventListeners = game => {
   document.body.onkeydown = () => {
     game.turnSnake(event.key);
   };
-};
-
-const animateSnakes = game => {
-  moveAndDrawSnake(game);
 };
 
 const randomlyTurnSnake = game => {
@@ -92,7 +74,6 @@ const printGameOver = function(score) {
 const setup = game => {
   attachEventListeners(game);
   createGrids();
-  drawGame(game);
 };
 
 const initSnake = () => {
@@ -113,26 +94,41 @@ const initGhostSnake = () => {
   return new Snake(ghostSnakePosition, new Direction(SOUTH), "ghost");
 };
 
+const eraseGame = function(status) {
+  eraseSnake(status.snake);
+  eraseSnake(status.ghostSnake);
+  eraseFood(status.food);
+};
+const drawGame = function(status) {
+  drawSnake(status.snake);
+  drawSnake(status.ghostSnake);
+  drawFood(status.food);
+};
+
+const updateGame = function(game, gameInterval) {
+  let status = game.getStatus();
+  game.move();
+  if (game.hasGameOver()) {
+    clearInterval(gameInterval);
+    printGameOver(status.score);
+  }
+  eraseGame(status);
+  game.update();
+  status = game.getStatus();
+  drawGame(status);
+  randomlyTurnSnake(game);
+  displayScore(status.score);
+};
+
 const main = function() {
   const snake = initSnake();
   const ghostSnake = initGhostSnake();
-  const food = new Food(5, 5, "normal");
+  const food = new Food(5, 5, "normalFood");
   const size = [100, 60];
   const game = new Game(snake, ghostSnake, food, size);
   setup(game);
 
-  const interval = setInterval(() => {
-    const state = game.state();
-    if (game.hasGameOver()) {
-      clearInterval(interval);
-      printGameOver(state.score);
-    }
-
-    eraseFood(state.previousFood);
-    drawFood(state.food);
-    animateSnakes(game);
-    randomlyTurnSnake(game);
-    game.update();
-    displayScore(state.score);
+  const gameInterval = setInterval(() => {
+    updateGame(game, gameInterval);
   }, 200);
 };
