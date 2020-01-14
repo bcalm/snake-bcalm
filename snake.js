@@ -56,17 +56,15 @@ class Snake {
   move() {
     const [headX, headY] = this.#positions[this.#positions.length - 1];
     this.#previousTail = this.#positions.shift();
-
     const [deltaX, deltaY] = this.#direction.delta;
-
     this.#positions.push([headX + deltaX, headY + deltaY]);
   }
 
-  onLine(boundary) {
-    const isTopTouch = this.head[1] < 0;
-    const isBottomTouch = this.head[0] === boundary[0];
-    const isLeftWallTouch = this.head[0] < 0;
-    const isRightWallTouch = this.head[1] === boundary[1];
+  isOnLine(verticalLine, horizontalLine) {
+    const isLeftWallTouch = this.head[0] < verticalLine[0];
+    const isRightWallTouch = this.head[1] >= verticalLine[1];
+    const isTopTouch = this.head[0] < horizontalLine[0];
+    const isBottomTouch = this.head[1] >= horizontalLine[1];
     return isTopTouch || isLeftWallTouch || isBottomTouch || isRightWallTouch;
   }
 

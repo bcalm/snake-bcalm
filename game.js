@@ -39,9 +39,18 @@ class Game {
     this.#ghostSnake.move();
   }
 
+  hasSnakeOnBoundary() {
+    const verticalLine = [4, this.#rowId - 4];
+    const horizontalLine = [4, this.#colId - 4];
+    return this.#ghostSnake.isOnLine(verticalLine, horizontalLine);
+  }
+
   turnGhostSnake() {
     const keys = ["ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight"];
     const direction = Math.floor(Math.random() * 4);
+    if (this.hasSnakeOnBoundary()) {
+      this.#ghostSnake.turnSnake(keys[direction]);
+    }
     this.#ghostSnake.turnSnake(keys[direction]);
   }
 
@@ -62,9 +71,10 @@ class Game {
   }
 
   hasGameOver() {
+    const verticalLine = [0, this.#rowId];
+    const horizontalLine = [0, this.#colId];
     const isSnakeEatenItself = this.#snake.hasEatenItself();
-    const line = [this.#rowId, this.#colId];
-    const isTouchBoundary = this.#snake.onLine(line);
+    const isTouchBoundary = this.#snake.isOnLine(verticalLine, horizontalLine);
 
     return isSnakeEatenItself || isTouchBoundary;
   }
