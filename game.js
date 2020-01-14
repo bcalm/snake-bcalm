@@ -1,7 +1,9 @@
 const generateNewFood = function(width, height) {
+  const foods = ["normal", "special"];
+  const foodType = foods[Math.floor(Math.random() * 2)];
   const rowId = Math.floor(Math.random() * width);
   const colId = Math.floor(Math.random() * height);
-  return new Food(rowId, colId);
+  return new Food(rowId, colId, foodType);
 };
 
 class Game {
@@ -48,7 +50,7 @@ class Game {
   }
 
   isFoodEaten() {
-    return this.#snake.isFoodEaten(this.#food.position);
+    return this.#snake.isFoodEaten(this.#food.position, this.#food.growSize);
   }
 
   update() {

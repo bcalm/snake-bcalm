@@ -1,8 +1,4 @@
-const updateSnakeHead = function(location, direction, position) {
-  const [headX, headY] = location[location.length - 1];
-  const [deltaX, deltaY] = direction;
-  position.push([headX + deltaX, headY + deltaY]);
-};
+const updateSnakeHead = function(location, direction, position, growSize) {};
 
 const arePointEqual = function(firstPoint, secondPoint) {
   return firstPoint[0] === secondPoint[0] && firstPoint[1] === secondPoint[1];
@@ -35,9 +31,15 @@ class Snake {
     this.#direction.changeDirection(pressedKey);
   }
 
-  isFoodEaten(foodPosition) {
+  grow(growSize) {
+    for (let size = 1; size <= growSize; size++) {
+      this.#positions.unshift(this.#previousTail);
+    }
+  }
+
+  isFoodEaten(foodPosition, growSize) {
     if (arePointEqual(this.head, foodPosition)) {
-      updateSnakeHead(this.location, this.#direction.delta, this.#positions);
+      this.grow(growSize);
       return true;
     }
     return false;
@@ -52,8 +54,12 @@ class Snake {
   }
 
   move() {
-    updateSnakeHead(this.location, this.#direction.delta, this.#positions);
+    const [headX, headY] = this.#positions[this.#positions.length - 1];
     this.#previousTail = this.#positions.shift();
+
+    const [deltaX, deltaY] = this.#direction.delta;
+
+    this.#positions.push([headX + deltaX, headY + deltaY]);
   }
 
   onLine(boundary) {
@@ -73,12 +79,20 @@ class Snake {
 class Food {
   #colId;
   #rowId;
-  constructor(colId, rowId) {
+  #type;
+  constructor(colId, rowId, type) {
     this.#colId = colId;
     this.#rowId = rowId;
+    this.#type = type;
   }
 
   get position() {
     return [this.#colId, this.#rowId];
+  }
+
+  get growSize() {
+    const sizeLookup = { normal: 5, special: 0 };
+    const type = this.#type;
+    return sizeLookup[type];
   }
 }

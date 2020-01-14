@@ -116,7 +116,7 @@ const initGhostSnake = () => {
 const main = function() {
   const snake = initSnake();
   const ghostSnake = initGhostSnake();
-  const food = new Food(5, 5);
+  const food = new Food(5, 5, "normal");
   const size = [100, 60];
   const game = new Game(snake, ghostSnake, food, size);
   setup(game);
