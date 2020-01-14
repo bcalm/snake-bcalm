@@ -71,11 +71,12 @@ class Game {
   }
 
   hasGameOver() {
+    const isTouchGhostSnake = this.#snake.hasTouchedAnotherSnake(this.#ghostSnake.location);
     const verticalLine = [0, this.#rowId];
     const horizontalLine = [0, this.#colId];
     const isSnakeEatenItself = this.#snake.hasEatenItself();
     const isTouchBoundary = this.#snake.isOnLine(verticalLine, horizontalLine);
 
-    return isSnakeEatenItself || isTouchBoundary;
+    return isTouchGhostSnake || isSnakeEatenItself || isTouchBoundary;
   }
 }

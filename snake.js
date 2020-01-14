@@ -73,6 +73,10 @@ class Snake {
     return snakeBody.some(part => part[0] === this.head[0] && this.head[1] === part[1]);
   }
 
+  hasTouchedAnotherSnake(body) {
+    return body.some(part => part[0] === this.head[0] && this.head[1] === part[1]);
+  }
+
   changePosition() {
     const position = [
       [20, 21],
