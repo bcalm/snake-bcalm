@@ -68,7 +68,7 @@ const displayScore = function(score) {
 };
 
 const printGameOver = function(score) {
-  game.innerHTML = `<div style='text-align:center;'><p style='font-size:10vw'>Game Over</p><br><p style='font-size:3vw'>Score: ${score}`;
+  game.innerText = `Game Over \n  Score: ${score}`;
 };
 
 const setup = game => {

@@ -1,6 +1,11 @@
 h1 {
   text-align: center;
 }
+
+#heading {
+  font-size: 2vw;
+}
+
 #grid {
   width: 800px;
   display: flex;
@@ -32,10 +37,20 @@ h1 {
 }
 
 #scoreCard {
+  border: 1px solid black;
+  margin-top: 2vw;
+  border-radius: 20px;
+  padding: 0.5vw 1vw 0.5vw 1vw;
+  background-color: lightgray;
   position: absolute;
-  right: 10%;
-  top: 2%;
+  right: 22%;
+  top: 8%;
   font-size: 2vw;
+}
+
+#game {
+  text-align: center;
+  font-size: 10vw;
 }
 
 #gameOver {

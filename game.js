@@ -36,20 +36,21 @@ class Game {
     this.#ghostSnake.move();
   }
 
-  hasSnakeOnBoundary() {
+  isSnakeOnBoundary(type) {
+    const snake = { snake: this.#snake, ghostSnake: this.#ghostSnake };
     const verticalLine = [0, this.#rowId];
     const horizontalLine = [0, this.#colId];
-    return this.#ghostSnake.isOnLine(verticalLine, horizontalLine);
+    return snake[type].isOnLine(verticalLine, horizontalLine);
+  }
+
+  turnSnake(pressedKey) {
+    this.#snake.turnSnake(pressedKey);
   }
 
   turnGhostSnake() {
     const keys = ["ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight"];
     const direction = Math.floor(Math.random() * 4);
     this.#ghostSnake.turnSnake(keys[direction]);
-  }
-
-  turnSnake(pressedKey) {
-    this.#snake.turnSnake(pressedKey);
   }
 
   hasGhostEatenFood(food) {
@@ -59,7 +60,7 @@ class Game {
   }
 
   update() {
-    if (this.hasSnakeOnBoundary()) {
+    if (this.isSnakeOnBoundary("ghostSnake")) {
       this.#ghostSnake.changePosition();
     }
     const food = this.#food.getStatus();
@@ -71,11 +72,11 @@ class Game {
   }
 
   hasGameOver() {
-    const isTouchGhostSnake = this.#snake.hasTouchedAnotherSnake(this.#ghostSnake.location);
-    const verticalLine = [0, this.#rowId];
-    const horizontalLine = [0, this.#colId];
+    const isTouchGhostSnake =
+      this.#snake.hasTouchedAnotherSnake(this.#ghostSnake.location) ||
+      this.#ghostSnake.hasTouchedAnotherSnake(this.#snake.location);
     const isSnakeEatenItself = this.#snake.hasEatenItself();
-    const isTouchBoundary = this.#snake.isOnLine(verticalLine, horizontalLine);
+    const isTouchBoundary = this.isSnakeOnBoundary("snake");
 
     return isTouchGhostSnake || isSnakeEatenItself || isTouchBoundary;
   }
