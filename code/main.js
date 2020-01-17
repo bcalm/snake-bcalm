@@ -108,7 +108,7 @@ const drawGame = function(status) {
 const updateGame = function(game, gameInterval) {
   let status = game.getStatus();
   game.move();
-  if (game.hasGameOver()) {
+  if (game.isGameOver()) {
     clearInterval(gameInterval);
     printGameOver(status.score);
   }

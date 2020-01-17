@@ -71,10 +71,8 @@ class Game {
     }
   }
 
-  hasGameOver() {
-    const isTouchGhostSnake =
-      this.#snake.hasTouchedAnotherSnake(this.#ghostSnake.location) ||
-      this.#ghostSnake.hasTouchedAnotherSnake(this.#snake.location);
+  isGameOver() {
+    const isTouchGhostSnake = this.#snake.hasTouchedAnotherSnake(this.#ghostSnake.location);
     const isSnakeEatenItself = this.#snake.hasEatenItself();
     const isTouchBoundary = this.isSnakeOnBoundary("snake");
 
