@@ -130,5 +130,5 @@ const main = function() {
 
   const gameInterval = setInterval(() => {
     updateGame(game, gameInterval);
-  }, 200);
+  }, 50);
 };
